@@ -34,19 +34,53 @@ class MemoryGame {
         this.board = Utilities.createDivWithClass("board");
         document.body.appendChild(this.board);
         this.board.append(...this.rows);
+        
+        let self = this;
+        this.board.addEventListener('click', function (event) {
+            let clickedCards = self.cards.filter(c=>c.clicked);
+            if(clickedCards.length === 2){
+                if(clickedCards[0].value === clickedCards[1].value){
+                    clickedCards[0].reveal();
+                    clickedCards[1].reveal();
+                }else{
+                    setTimeout(()=>{
+                        clickedCards[0].flip();
+                        clickedCards[1].flip();
+                    }, 500);
+                }
+            }
+        });
     }    
 }
 
 class Card {
     card: HTMLDivElement;
+    clicked: boolean;
+    value: string;
+    revealed: boolean;
+
     constructor(value:string){
         this.card = Utilities.createDivWithClass("card");
-        this.card.innerText = value;
+        this.value = value;
+
+        let self = this;
         this.card.addEventListener('click', function (event) {
-            Utilities.toggleDivClass(this, "clicked");
+            self.flip();
         });
     }
 
+    flip(){
+        if(!this.revealed){
+            this.clicked = !this.clicked;
+            this.card.innerText = this.clicked ? this.value : "";
+        }
+    }
+
+    reveal(){
+        this.revealed = true;
+        this.card.innerText = this.value;
+        this.clicked = false;
+    }
 
 }
 
